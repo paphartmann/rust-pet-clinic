@@ -1,5 +1,6 @@
-use crate::models::vet::Vet;
+use crate::models::vet::vet::Vet;
 use sqlx::PgPool;
+use std::collections::HashMap;
 
 #[derive(Clone)]
 pub struct VetRepository {
@@ -32,5 +33,27 @@ impl VetRepository {
                 )
             })
             .collect())
+    }
+
+    pub async fn get_all_vet_specialty(&self) -> anyhow::Result<HashMap<i32, Vec<String>>> {
+        let rows = sqlx::query!(
+            r#"
+        SELECT vs.vet_id, s.name AS specialty
+        FROM vet_specialties vs
+        JOIN specialties s ON s.id = vs.specialty_id
+        "#
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        let mut map: HashMap<i32, Vec<String>> = HashMap::new();
+
+        for row in rows {
+            map.entry(row.vet_id)
+                .or_default()
+                .push(row.specialty.unwrap_or_default());
+        }
+
+        Ok(map)
     }
 }

@@ -12,7 +12,10 @@ impl VisitService {
     }
 
     pub async fn get_visits(&self, pet_id: i32) -> anyhow::Result<Vec<Visit>> {
-        let visits = self.repo.get_visits(pet_id).await?;
+        let mut pets_ids = Vec::new();
+        pets_ids.push(pet_id);
+
+        let visits = self.repo.get_visits(&pets_ids).await?;
 
         Ok(visits)
     }

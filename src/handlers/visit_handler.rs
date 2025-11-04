@@ -6,9 +6,9 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct VisitResponse {
-    id: i32,
-    visit_date: Option<NaiveDate>,
-    description: Option<String>,
+    pub(crate) id: i32,
+    pub(crate) visit_date: Option<NaiveDate>,
+    pub(crate) description: Option<String>,
 }
 
 pub async fn get_visits_handler(

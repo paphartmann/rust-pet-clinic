@@ -10,25 +10,6 @@ pub struct Owner {
     pub phone: Option<String>,
 }
 
-impl Owner {
-    pub fn new(
-        id: i32,
-        first_name: Option<String>,
-        last_name: Option<String>,
-        address: Option<String>,
-        city: Option<String>,
-        phone: Option<String>,
-    ) -> Self {
-        Self {
-            id,
-            first_name,
-            last_name,
-            address,
-            city,
-            phone,
-        }
-    }
-}
 
 #[derive(Debug, Clone)]
 pub struct OwnerWithPetsAndVisits {

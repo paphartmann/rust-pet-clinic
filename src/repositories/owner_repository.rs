@@ -1,6 +1,4 @@
 use crate::models::owner::owner::{Owner, OwnerAdd};
-use crate::models::owner::pet::PetAdd;
-use crate::models::owner::visit::Visit;
 use sqlx::PgPool;
 
 #[derive(Clone)]

@@ -1,10 +1,9 @@
-use crate::models::vet::vet::{Vet, VetWithSpecialties};
+use crate::models::vet::vet::VetWithSpecialties;
 use crate::services::vet_service::VetService;
 use axum::Json;
 use axum::extract::State;
 use serde::Serialize;
 
-/// DTO для HTTP-ответа
 #[derive(Serialize)]
 pub struct VetResponse {
     pub id: i32,
@@ -22,7 +21,7 @@ pub async fn get_vets_handler(State(service): State<VetService>) -> Json<Vec<Vet
             id: v.id,
             first_name: v.first_name,
             last_name: v.last_name,
-            specialties: v.specialties
+            specialties: v.specialties,
         })
         .collect();
 

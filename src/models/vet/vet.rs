@@ -23,18 +23,3 @@ impl Vet {
     }
 }
 
-impl VetWithSpecialties {
-    pub fn new(
-        id: i32,
-        first_name: impl Into<String>,
-        last_name: impl Into<String>,
-        specialties: Vec<String>,
-    ) -> Self {
-        Self {
-            id,
-            first_name: first_name.into(),
-            last_name: last_name.into(),
-            specialties: specialties,
-        }
-    }
-}

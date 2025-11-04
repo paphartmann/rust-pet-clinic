@@ -1,4 +1,4 @@
-use crate::models::vet::vet::{Vet, VetWithSpecialties};
+use crate::models::vet::vet::VetWithSpecialties;
 use crate::repositories::vet_repository::VetRepository;
 
 #[derive(Clone)]

@@ -1,4 +1,3 @@
-use crate::handlers::owner_handler::PetRequest;
 use crate::models::owner::owner::{OwnerAdd, OwnerWithPetsAndVisits};
 use crate::models::owner::pet::{PetAdd, PetWithVisits};
 use crate::repositories::owner_repository::OwnerRepository;
@@ -41,7 +40,7 @@ impl OwnerService {
         });
 
         let owner_with_pets = OwnerWithPetsAndVisits::new(
-            owner_id,
+            owner.id,
             owner.first_name,
             owner.last_name,
             owner.address,
@@ -92,6 +91,9 @@ impl OwnerService {
         owner_id: i32,
         owner_request: OwnerAdd,
     ) -> anyhow::Result<i32> {
-        Ok(self.owner_repository.update_owner(owner_id, owner_request).await?)
+        Ok(self
+            .owner_repository
+            .update_owner(owner_id, owner_request)
+            .await?)
     }
 }

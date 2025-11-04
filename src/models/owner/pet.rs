@@ -9,22 +9,6 @@ pub struct Pet {
     pub birth_date: Option<NaiveDate>,
 }
 
-impl Pet {
-    pub fn new(
-        id: i32,
-        name: Option<String>,
-        pet_type: Option<String>,
-        birth_date: Option<NaiveDate>,
-    ) -> Self {
-        Self {
-            id,
-            name,
-            pet_type,
-            birth_date,
-        }
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct PetWithVisits {
     pub id: i32,

@@ -32,7 +32,7 @@ pub async fn visit_by_pet_handler(
 }
 
 #[derive(Deserialize)]
-pub struct VisitRequest {
+pub struct VisitAddRequest {
     pub(crate) visit_date: Option<NaiveDate>,
     pub(crate) description: Option<String>,
 }
@@ -40,7 +40,7 @@ pub struct VisitRequest {
 pub async fn add_visit_to_pet_handler(
     Path(pet_id): Path<i32>,
     State(service): State<VisitService>,
-    Json(body): Json<VisitRequest>,
+    Json(body): Json<VisitAddRequest>,
 ) -> Result<StatusCode, StatusCode> {
     service
         .add_visit(

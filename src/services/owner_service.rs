@@ -1,9 +1,10 @@
-use crate::models::owner::owner::{Owner, OwnerWithPetsAndVisits};
+use crate::handlers::owner_handler::PetAddRequest;
+use crate::models::owner::owner::OwnerWithPetsAndVisits;
+use crate::models::owner::pet::{PetAdd, PetWithVisits};
 use crate::repositories::owner_repository::OwnerRepository;
 use crate::repositories::pet_repository::PetRepository;
 use crate::repositories::visit_repository::VisitRepository;
 use std::collections::HashMap;
-use crate::models::owner::pet::PetWithVisits;
 
 #[derive(Clone)]
 pub struct OwnerService {
@@ -34,29 +35,40 @@ impl OwnerService {
         let pet_ids = pets.iter().map(|p| p.id).collect::<Vec<_>>();
         let visits = self.visit_repository.get_visits(&pet_ids).await?;
 
-        let pet_id_to_visits = visits
-            .into_iter()
-            .fold(
-                HashMap::new(),
-                |mut map, visit| {
-                    map.entry(visit.pet_id).or_insert_with(Vec::new).push(visit);
-                    map
-                });
+        let pet_id_to_visits = visits.into_iter().fold(HashMap::new(), |mut map, visit| {
+            map.entry(visit.pet_id).or_insert_with(Vec::new).push(visit);
+            map
+        });
 
         let owner_with_pets = OwnerWithPetsAndVisits::new(
-            owner_id, owner.first_name, owner.last_name, owner.address, owner.city, owner.phone,
-            pets
-                .into_iter()
-                .map(|p| PetWithVisits::new(
-                    p.id,
-                    p.name,
-                    p.pet_type,
-                    p.birth_date,
-                    pet_id_to_visits.get(&p.id).cloned().unwrap_or_else(Vec::new))
-                )
+            owner_id,
+            owner.first_name,
+            owner.last_name,
+            owner.address,
+            owner.city,
+            owner.phone,
+            pets.into_iter()
+                .map(|p| {
+                    PetWithVisits::new(
+                        p.id,
+                        p.name,
+                        p.pet_type,
+                        p.birth_date,
+                        pet_id_to_visits
+                            .get(&p.id)
+                            .cloned()
+                            .unwrap_or_else(Vec::new),
+                    )
+                })
                 .collect(),
         );
 
         Ok(Option::Some(owner_with_pets))
+    }
+
+    pub async fn add_pet(&self, owner_id: i32, pet_request: PetAdd) -> anyhow::Result<()> {
+        self.pet_repository.add_pet(owner_id, pet_request).await?;
+
+        Ok(())
     }
 }

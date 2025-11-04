@@ -1,10 +1,13 @@
-use crate::handlers::visit_handler::VisitResponse;
+use crate::handlers::visit_handler::{VisitAddRequest, VisitResponse};
+use crate::models::owner::pet::PetAdd;
+use crate::models::owner::visit::VisitAdd;
 use crate::services::owner_service::OwnerService;
+use crate::services::visit_service::VisitService;
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use chrono::NaiveDate;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
 pub struct OwnerResponse {
@@ -44,24 +47,52 @@ pub async fn get_owner_handler(
         address: owner.address,
         city: owner.city,
         phone: owner.phone,
-        pets: owner.pets
+        pets: owner
+            .pets
             .into_iter()
             .map(|p| PetResponse {
                 id: p.id,
                 name: p.name,
                 pet_type: p.pet_type,
                 birth_date: p.birth_date,
-                visits: p.visits
+                visits: p
+                    .visits
                     .into_iter()
                     .map(|v| VisitResponse {
                         id: v.id,
                         visit_date: v.visit_date,
                         description: v.description,
-                    }).collect(),
+                    })
+                    .collect(),
             })
             .collect(),
     };
 
-
     Ok(Json(transformed))
+}
+
+#[derive(Deserialize)]
+pub struct PetAddRequest {
+    pub name: Option<String>,
+    pub pet_type: String,
+    pub birth_date: Option<NaiveDate>,
+}
+
+pub async fn add_pet_to_owner_handler(
+    Path(owner_id): Path<i32>,
+    State(service): State<OwnerService>,
+    Json(body): Json<PetAddRequest>,
+) -> Result<StatusCode, StatusCode> {
+    service
+        .add_pet(
+            owner_id,
+            PetAdd {
+                name: body.name,
+                pet_type: body.pet_type,
+                birth_date: body.birth_date,
+            },
+        )
+        .await
+        .map(|_| StatusCode::CREATED)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }

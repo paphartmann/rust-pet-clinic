@@ -51,3 +51,10 @@ impl PetWithVisits {
         }
     }
 }
+
+
+pub struct PetAdd {
+    pub name: Option<String>,
+    pub pet_type: String,
+    pub birth_date: Option<NaiveDate>,
+}

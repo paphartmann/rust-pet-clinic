@@ -1,0 +1,9 @@
+POST http://localhost:3000/owner/6/pet
+Content-Type: application/json
+
+{
+  "name": "Barsic",
+  "pet_type": "cat",
+  "birth_date": "2025-09-04"
+}
+

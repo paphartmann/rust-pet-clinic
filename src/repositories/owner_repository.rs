@@ -47,4 +47,25 @@ impl OwnerRepository {
 
         Ok(insert_result.id)
     }
+
+    pub async fn update_owner(&self, owner_id: i32, owner: OwnerAdd) -> anyhow::Result<i32> {
+        let insert_result = sqlx::query!(
+            r#"
+            UPDATE owners
+            SET first_name = $1, last_name = $2, address= $3, city = $4, telephone = $5
+            WHERE id = $6
+            RETURNING id
+            "#,
+            owner.first_name,
+            owner.last_name,
+            owner.address,
+            owner.city,
+            owner.phone,
+            owner_id,
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(insert_result.id)
+    }
 }

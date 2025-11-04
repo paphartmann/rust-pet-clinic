@@ -59,6 +59,27 @@ pub async fn create_owner_handler(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
+pub async fn update_owner_handler(
+    Path(owner_id): Path<i32>,
+    State(service): State<OwnerService>,
+    Json(body): Json<OwnerRequest>,
+) -> Result<Json<OwnerCreateResponse>, StatusCode> {
+    service
+        .update_owner(
+            owner_id,
+            OwnerAdd {
+                first_name: body.first_name,
+                last_name: body.last_name,
+                address: body.address,
+                city: body.city,
+                phone: body.phone,
+            },
+        )
+        .await
+        .map(|id| Json(OwnerCreateResponse { id }))
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
 pub async fn get_owner_handler(
     Path(owner_id): Path<i32>,
     State(service): State<OwnerService>,

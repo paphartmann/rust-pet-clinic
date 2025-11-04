@@ -86,4 +86,12 @@ impl OwnerService {
     pub async fn add_owner(&self, owner_request: OwnerAdd) -> anyhow::Result<i32> {
         Ok(self.owner_repository.add_owner(owner_request).await?)
     }
+
+    pub async fn update_owner(
+        &self,
+        owner_id: i32,
+        owner_request: OwnerAdd,
+    ) -> anyhow::Result<i32> {
+        Ok(self.owner_repository.update_owner(owner_id, owner_request).await?)
+    }
 }

@@ -1,8 +1,7 @@
-use crate::handlers::visit_handler::{VisitAddRequest, VisitResponse};
+use crate::handlers::visit_handler::VisitResponse;
+use crate::models::owner::owner::OwnerAdd;
 use crate::models::owner::pet::PetAdd;
-use crate::models::owner::visit::VisitAdd;
 use crate::services::owner_service::OwnerService;
-use crate::services::visit_service::VisitService;
 use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
@@ -27,6 +26,32 @@ pub struct PetResponse {
     pub pet_type: Option<String>,
     pub birth_date: Option<NaiveDate>,
     pub visits: Vec<VisitResponse>,
+}
+
+#[derive(Deserialize)]
+pub struct OwnerRequest {
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub address: Option<String>,
+    pub city: Option<String>,
+    pub phone: Option<String>,
+}
+
+pub async fn create_owner_handler(
+    State(service): State<OwnerService>,
+    Json(body): Json<OwnerRequest>,
+) -> Result<StatusCode, StatusCode> {
+    service
+        .add_owner(OwnerAdd {
+            first_name: body.first_name,
+            last_name: body.last_name,
+            address: body.address,
+            city: body.city,
+            phone: body.phone,
+        })
+        .await
+        .map(|_| StatusCode::CREATED)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
 pub async fn get_owner_handler(

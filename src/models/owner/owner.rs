@@ -62,3 +62,11 @@ impl OwnerWithPetsAndVisits {
         }
     }
 }
+
+pub struct OwnerAdd {
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub address: Option<String>,
+    pub city: Option<String>,
+    pub phone: Option<String>,
+}

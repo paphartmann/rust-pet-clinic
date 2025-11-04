@@ -1,6 +1,7 @@
-use sqlx::PgPool;
-use crate::models::owner::owner::Owner;
+use crate::models::owner::owner::{Owner, OwnerAdd};
+use crate::models::owner::pet::PetAdd;
 use crate::models::owner::visit::Visit;
+use sqlx::PgPool;
 
 #[derive(Clone)]
 pub struct OwnerRepository {
@@ -26,5 +27,23 @@ impl OwnerRepository {
         .await?;
 
         Ok(rows)
+    }
+
+    pub async fn add_owner(&self, owner: OwnerAdd) -> anyhow::Result<u64> {
+        let insert_result = sqlx::query!(
+            r#"
+            INSERT INTO owners (first_name, last_name, address, city, telephone)
+            VALUES ($1, $2, $3, $4, $5)
+            "#,
+            owner.first_name,
+            owner.last_name,
+            owner.address,
+            owner.city,
+            owner.phone
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(insert_result.rows_affected())
     }
 }

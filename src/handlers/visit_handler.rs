@@ -13,7 +13,7 @@ pub struct VisitResponse {
     pub(crate) description: Option<String>,
 }
 
-pub async fn visit_by_pet_handler(
+pub async fn visits_by_pet_handler(
     Path(pet_id): Path<i32>,
     State(service): State<VisitService>,
 ) -> Json<Vec<VisitResponse>> {

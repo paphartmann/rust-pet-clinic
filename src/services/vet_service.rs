@@ -19,7 +19,10 @@ impl VetService {
         let result = vets
             .into_iter()
             .map(|vet| {
-                let specialties = vet_specialties.get(&vet.id).cloned().unwrap_or_default();
+                let specialties = vet_specialties
+                    .get(&vet.id)
+                    .cloned()
+                    .unwrap_or_default();
 
                 VetWithSpecialties {
                     id: vet.id,

@@ -50,9 +50,9 @@ impl PetRepository {
         let insert_result = sqlx::query!(
             r#"
             UPDATE pets set
-                            name = $1,
-                            birth_date = $2,
-                            type_id =  (select id from types where name = $3)
+            name = $1,
+            birth_date = $2,
+            type_id =  (select id from types where name = $3)
             WHERE owner_id = $4 AND id = $5
             "#,
             pet.name,

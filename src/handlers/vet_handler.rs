@@ -1,7 +1,7 @@
 use crate::models::vet::vet::VetWithSpecialties;
 use crate::services::vet_service::VetService;
-use axum::Json;
 use axum::extract::State;
+use axum::Json;
 use serde::Serialize;
 
 #[derive(Serialize)]

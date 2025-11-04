@@ -2,9 +2,9 @@ use crate::handlers::visit_handler::VisitResponse;
 use crate::models::owner::owner::OwnerAdd;
 use crate::models::owner::pet::PetAdd;
 use crate::services::owner_service::OwnerService;
-use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
+use axum::Json;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
@@ -153,7 +153,7 @@ pub async fn add_pet_to_owner_handler(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-pub async fn update_owner_pet_handler(
+pub async fn update_owners_pet_handler(
     Path((owner_id, pet_id)): Path<(i32, i32)>,
     State(service): State<OwnerService>,
     Json(body): Json<PetRequest>,

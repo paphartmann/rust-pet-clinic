@@ -34,7 +34,11 @@ impl OwnerService {
         let pet_ids = pets.iter().map(|p| p.id).collect::<Vec<_>>();
         let visits = self.visit_repository.get_visits(&pet_ids).await?;
 
-        let pet_id_to_visits = visits.into_iter().fold(HashMap::new(), |mut map, visit| {
+        let pet_id_to_visits = visits
+            .into_iter()
+            .fold(
+                HashMap::new(), 
+                |mut map, visit| {
             map.entry(visit.pet_id).or_insert_with(Vec::new).push(visit);
             map
         });

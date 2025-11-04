@@ -38,10 +38,10 @@ impl VetRepository {
     pub async fn get_all_vet_specialty(&self) -> anyhow::Result<HashMap<i32, Vec<String>>> {
         let rows = sqlx::query!(
             r#"
-        SELECT vs.vet_id, s.name AS specialty
-        FROM vet_specialties vs
-        JOIN specialties s ON s.id = vs.specialty_id
-        "#
+            SELECT vs.vet_id, s.name AS specialty
+            FROM vet_specialties vs
+            JOIN specialties s ON s.id = vs.specialty_id
+            "#
         )
         .fetch_all(&self.pool)
         .await?;

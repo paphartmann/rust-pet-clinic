@@ -28,21 +28,22 @@ impl PetRepository {
         Ok(rows)
     }
 
-    pub async fn add_pet(&self, owner_id: i32, pet: PetAdd) -> anyhow::Result<u64> {
+    pub async fn add_pet(&self, owner_id: i32, pet: PetAdd) -> anyhow::Result<i32> {
         let insert_result = sqlx::query!(
             r#"
             INSERT INTO pets (owner_id, name, birth_date, type_id)
             VALUES ($1, $2, $3, (select id from types where name = $4))
+            RETURNING id
             "#,
             owner_id,
             pet.name,
             pet.birth_date,
             pet.pet_type,
         )
-        .execute(&self.pool)
+        .fetch_one(&self.pool)
         .await?;
 
-        Ok(insert_result.rows_affected())
+        Ok(insert_result.id)
     }
 
     pub async fn update_pet(&self, owner_id: i32, pet_id: i32, pet: PetAdd) -> anyhow::Result<u64> {

@@ -37,10 +37,15 @@ pub struct OwnerRequest {
     pub phone: Option<String>,
 }
 
+#[derive(Serialize)]
+pub struct OwnerCreateResponse {
+    pub id: i32,
+}
+
 pub async fn create_owner_handler(
     State(service): State<OwnerService>,
     Json(body): Json<OwnerRequest>,
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<OwnerCreateResponse>, StatusCode> {
     service
         .add_owner(OwnerAdd {
             first_name: body.first_name,
@@ -50,7 +55,7 @@ pub async fn create_owner_handler(
             phone: body.phone,
         })
         .await
-        .map(|_| StatusCode::CREATED)
+        .map(|id| Json(OwnerCreateResponse { id }))
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
@@ -103,11 +108,16 @@ pub struct PetRequest {
     pub birth_date: Option<NaiveDate>,
 }
 
+#[derive(Serialize)]
+pub struct PetCreateResponse {
+    pub id: i32,
+}
+
 pub async fn add_pet_to_owner_handler(
     Path(owner_id): Path<i32>,
     State(service): State<OwnerService>,
     Json(body): Json<PetRequest>,
-) -> Result<StatusCode, StatusCode> {
+) -> Result<Json<PetCreateResponse>, StatusCode> {
     service
         .add_pet(
             owner_id,
@@ -118,7 +128,7 @@ pub async fn add_pet_to_owner_handler(
             },
         )
         .await
-        .map(|_| StatusCode::CREATED)
+        .map(|id| Json(PetCreateResponse { id }))
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
 }
 

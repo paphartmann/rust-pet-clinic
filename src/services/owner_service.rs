@@ -66,10 +66,8 @@ impl OwnerService {
         Ok(Option::Some(owner_with_pets))
     }
 
-    pub async fn add_pet(&self, owner_id: i32, pet_request: PetAdd) -> anyhow::Result<()> {
-        self.pet_repository.add_pet(owner_id, pet_request).await?;
-
-        Ok(())
+    pub async fn add_pet(&self, owner_id: i32, pet_request: PetAdd) -> anyhow::Result<i32> {
+        Ok(self.pet_repository.add_pet(owner_id, pet_request).await?)
     }
 
     pub async fn update_pet(
@@ -78,14 +76,14 @@ impl OwnerService {
         pet_id: i32,
         pet_request: PetAdd,
     ) -> anyhow::Result<()> {
-        self.pet_repository.update_pet(owner_id, pet_id, pet_request).await?;
+        self.pet_repository
+            .update_pet(owner_id, pet_id, pet_request)
+            .await?;
 
         Ok(())
     }
 
-    pub async fn add_owner(&self, owner_request: OwnerAdd) -> anyhow::Result<()> {
-        self.owner_repository.add_owner(owner_request).await?;
-
-        Ok(())
+    pub async fn add_owner(&self, owner_request: OwnerAdd) -> anyhow::Result<i32> {
+        Ok(self.owner_repository.add_owner(owner_request).await?)
     }
 }

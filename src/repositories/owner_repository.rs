@@ -29,11 +29,12 @@ impl OwnerRepository {
         Ok(rows)
     }
 
-    pub async fn add_owner(&self, owner: OwnerAdd) -> anyhow::Result<u64> {
+    pub async fn add_owner(&self, owner: OwnerAdd) -> anyhow::Result<i32> {
         let insert_result = sqlx::query!(
             r#"
             INSERT INTO owners (first_name, last_name, address, city, telephone)
             VALUES ($1, $2, $3, $4, $5)
+            RETURNING id
             "#,
             owner.first_name,
             owner.last_name,
@@ -41,9 +42,9 @@ impl OwnerRepository {
             owner.city,
             owner.phone
         )
-        .execute(&self.pool)
+        .fetch_one(&self.pool)
         .await?;
 
-        Ok(insert_result.rows_affected())
+        Ok(insert_result.id)
     }
 }

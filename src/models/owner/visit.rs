@@ -24,3 +24,7 @@ impl Visit {
     }
 }
 
+pub struct VisitAdd{
+    pub visit_date: Option<NaiveDate>,
+    pub description: Option<String>,
+}

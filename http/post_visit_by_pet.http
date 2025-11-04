@@ -1,0 +1,8 @@
+POST http://localhost:3000/pet/8/visit
+Content-Type: application/json
+
+{
+    "visit_date": "2025-10-01",
+    "description": "Add visit"
+}
+

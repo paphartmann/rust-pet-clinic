@@ -1,5 +1,5 @@
+use crate::models::owner::visit::{Visit, VisitAdd};
 use sqlx::PgPool;
-use crate::models::owner::visit::Visit;
 
 #[derive(Clone)]
 pub struct VisitRepository {
@@ -26,5 +26,20 @@ impl VisitRepository {
         .await?;
 
         Ok(rows)
+    }
+
+    pub async fn add_visit(&self, pet_id: i32, visit: VisitAdd) -> anyhow::Result<u64> {
+        let insert_result = sqlx::query!(
+            r#"
+            INSERT INTO visits (pet_id, visit_date, description) VALUES ($1, $2, $3)
+            "#,
+            pet_id,
+            visit.visit_date,
+            visit.description
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(insert_result.rows_affected())
     }
 }

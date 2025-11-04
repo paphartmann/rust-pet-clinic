@@ -44,4 +44,25 @@ impl PetRepository {
 
         Ok(insert_result.rows_affected())
     }
+
+    pub async fn update_pet(&self, owner_id: i32, pet_id: i32, pet: PetAdd) -> anyhow::Result<u64> {
+        let insert_result = sqlx::query!(
+            r#"
+            UPDATE pets set
+                            name = $1,
+                            birth_date = $2,
+                            type_id =  (select id from types where name = $3)
+            WHERE owner_id = $4 AND id = $5
+            "#,
+            pet.name,
+            pet.birth_date,
+            pet.pet_type,
+            owner_id,
+            pet_id
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(insert_result.rows_affected())
+    }
 }

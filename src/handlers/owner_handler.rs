@@ -72,7 +72,7 @@ pub async fn get_owner_handler(
 }
 
 #[derive(Deserialize)]
-pub struct PetAddRequest {
+pub struct PetRequest {
     pub name: Option<String>,
     pub pet_type: String,
     pub birth_date: Option<NaiveDate>,
@@ -81,11 +81,31 @@ pub struct PetAddRequest {
 pub async fn add_pet_to_owner_handler(
     Path(owner_id): Path<i32>,
     State(service): State<OwnerService>,
-    Json(body): Json<PetAddRequest>,
+    Json(body): Json<PetRequest>,
 ) -> Result<StatusCode, StatusCode> {
     service
         .add_pet(
             owner_id,
+            PetAdd {
+                name: body.name,
+                pet_type: body.pet_type,
+                birth_date: body.birth_date,
+            },
+        )
+        .await
+        .map(|_| StatusCode::CREATED)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+pub async fn update_owner_pet_handler(
+    Path((owner_id, pet_id)): Path<(i32, i32)>,
+    State(service): State<OwnerService>,
+    Json(body): Json<PetRequest>,
+) -> Result<StatusCode, StatusCode> {
+    service
+        .update_pet(
+            owner_id,
+            pet_id,
             PetAdd {
                 name: body.name,
                 pet_type: body.pet_type,

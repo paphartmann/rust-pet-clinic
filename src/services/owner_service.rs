@@ -1,4 +1,4 @@
-use crate::handlers::owner_handler::PetAddRequest;
+use crate::handlers::owner_handler::PetRequest;
 use crate::models::owner::owner::OwnerWithPetsAndVisits;
 use crate::models::owner::pet::{PetAdd, PetWithVisits};
 use crate::repositories::owner_repository::OwnerRepository;
@@ -68,6 +68,17 @@ impl OwnerService {
 
     pub async fn add_pet(&self, owner_id: i32, pet_request: PetAdd) -> anyhow::Result<()> {
         self.pet_repository.add_pet(owner_id, pet_request).await?;
+
+        Ok(())
+    }
+
+    pub async fn update_pet(
+        &self,
+        owner_id: i32,
+        pet_id: i32,
+        pet_request: PetAdd,
+    ) -> anyhow::Result<()> {
+        self.pet_repository.update_pet(owner_id, pet_id, pet_request).await?;
 
         Ok(())
     }

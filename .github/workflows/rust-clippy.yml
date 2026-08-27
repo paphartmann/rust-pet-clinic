@@ -41,6 +41,10 @@ jobs:
       - name: Install required cargo
         run: cargo install clippy-sarif sarif-fmt
 
+      - name: Run required commands
+        run: docker compose up -d
+        run: sqlx migrate run --database-url postgres://petclinic:petclinic@localhost:5432/petclinic
+
       - name: Run rust-clippy
         run:
           cargo clippy

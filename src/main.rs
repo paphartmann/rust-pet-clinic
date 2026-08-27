@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
 async fn setup_router() -> anyhow::Result<Router> {
     let pool = PgPoolOptions::new()
         .max_connections(std::env::var("DATABASE_MAX_CONNECTIONS")?.parse()?)
-        .connect(&*std::env::var("DATABASE_URL")?)
+        .connect(&std::env::var("DATABASE_URL")?)
         .await?;
 
     let vet_repo = VetRepository::new(pool.clone());

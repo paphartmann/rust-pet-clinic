@@ -39,11 +39,14 @@ jobs:
           override: true
 
       - name: Install required cargo
-        run: cargo install clippy-sarif sarif-fmt
+        run: |
+          cargo install clippy-sarif sarif-fmt
+          cargo install sqlx-cli --no-default-features --features rustls,postgres
 
       - name: Run required commands
-        run: docker compose up -d
-        run: sqlx migrate run --database-url postgres://petclinic:petclinic@localhost:5432/petclinic
+        run: |
+          docker compose up -d
+          sqlx migrate run --database-url postgres://petclinic:petclinic@localhost:5432/petclinic
 
       - name: Run rust-clippy
         run:

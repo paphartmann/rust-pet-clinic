@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   zap-scan:
-    name: OWASP ZAP baseline scan
+    name: OWASP ZAP
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

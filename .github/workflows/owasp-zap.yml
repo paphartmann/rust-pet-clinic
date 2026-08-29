@@ -55,7 +55,7 @@ jobs:
           DATABASE_MAX_CONNECTIONS: "5"
         run: |
           cargo build --release
-          cargo run --release > app.log 2>&1 &
+          nohup ./target/release/rust-petclinic > app.log 2>&1 < /dev/null &
           echo $! > app.pid
 
       - name: Wait for application to respond
@@ -64,6 +64,11 @@ jobs:
             if curl -fsS http://127.0.0.1:3000/health > /dev/null; then
               exit 0
             fi
+            if ! kill -0 "$(cat app.pid)" 2>/dev/null; then
+              echo "Application exited before becoming ready"
+              cat app.log
+              exit 1
+            fi
             sleep 2
           done
           echo "Application is not responding on http://127.0.0.1:3000/health"
@@ -71,11 +76,17 @@ jobs:
           exit 1
 
       - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.15.0
-        with:
-          target: "http://host.docker.internal:3000"
-          fail_action: false
-          allow_issue_writing: false
+        run: |
+          mkdir -p zap-work
+          docker run --rm \
+            --network host \
+            -v "${{ github.workspace }}/zap-work:/zap/wrk/:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+            -t http://127.0.0.1:3000 \
+            -J zap_report.json \
+            -w zap_report.md \
+            -r zap_report.html || test $? -le 2
 
       - name: Upload ZAP report
         if: always()
@@ -83,7 +94,7 @@ jobs:
         with:
           name: zap-report
           path: |
-            report_html.html
-            report_json.json
-            report_md.md
+            zap-work/zap_report.html
+            zap-work/zap_report.json
+            zap-work/zap_report.md
           if-no-files-found: warn

@@ -57,9 +57,7 @@ jobs:
           DATABASE_URL: postgres://petclinic:petclinic@127.0.0.1:5432/petclinic
           DATABASE_MAX_CONNECTIONS: "5"
         run: |
-          cargo build --release
-          nohup ./target/release/rust-petclinic > app.log 2>&1 < /dev/null &
-          echo $! > app.pid
+          cargo run &
 
       - name: Wait for application to respond
         run: |
@@ -67,25 +65,20 @@ jobs:
             if curl -fsS http://127.0.0.1:3000/health > /dev/null; then
               exit 0
             fi
-            if ! kill -0 "$(cat app.pid)" 2>/dev/null; then
-              echo "Application exited before becoming ready"
-              cat app.log
-              exit 1
-            fi
             sleep 2
           done
           echo "Application is not responding on http://127.0.0.1:3000/health"
-          cat app.log || true
           exit 1
 
-      - name: Run OWASP ZAP Baseline Scan
+      - name: Run OWASP ZAP
         run: |
           mkdir -p zap-work
+          chmod 777 zap-work
           docker run --rm \
             --network host \
             -v "${{ github.workspace }}/zap-work:/zap/wrk/:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py \
+            zap-full-scan.py \
             -t http://127.0.0.1:3000 \
             -J zap_report.json \
             -w zap_report.md \

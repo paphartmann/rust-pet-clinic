@@ -70,27 +70,13 @@ jobs:
           echo "Application is not responding on http://127.0.0.1:3000/health"
           exit 1
 
-      - name: Run OWASP ZAP
-        run: |
-          mkdir -p zap-work
-          chmod 777 zap-work
-          docker run --rm \
-            --network host \
-            -v "${{ github.workspace }}/zap-work:/zap/wrk/:rw" \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-full-scan.py \
-            -t http://127.0.0.1:3000 \
-            -J zap_report.json \
-            -w zap_report.md \
-            -r zap_report.html || test $? -le 2
-
-      - name: Upload ZAP report
-        if: always()
-        uses: actions/upload-artifact@v6
+      - name: OWASP ZAP Full Scan
+        uses: zaproxy/action-full-scan@v0.13.0
         with:
-          name: zap-report
-          path: |
-            zap-work/zap_report.html
-            zap-work/zap_report.json
-            zap-work/zap_report.md
-          if-no-files-found: warn
+          target: 'http://localhost:3000'
+          cmd_options: '-a'
+          allow_issue_writing: false
+
+      - name: Show application logs on failure
+        if: failure()
+        run: tail -n 200 petclinic.log

@@ -1,0 +1,359 @@
+openapi: 3.0.3
+info:
+  title: Rust Pet Clinic API
+  version: 1.0.0
+  description: >-
+    API definition derived from the existing route files and REST client requests in the
+    project's http folder.
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /hello:
+    get:
+      summary: Greeting endpoint
+      responses:
+        '200':
+          description: Greeting payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloResponse'
+
+  /vets:
+    get:
+      summary: List vets
+      responses:
+        '200':
+          description: List of vets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VetResponse'
+
+  /owner:
+    post:
+      summary: Create owner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OwnerRequest'
+      responses:
+        '200':
+          description: Owner created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerCreateResponse'
+
+  /owner/{owner_id}:
+    get:
+      summary: Get owner by id
+      parameters:
+        - in: path
+          name: owner_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Owner details including pets and visits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerResponse'
+        '404':
+          description: Owner not found
+    put:
+      summary: Update owner
+      parameters:
+        - in: path
+          name: owner_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OwnerRequest'
+      responses:
+        '200':
+          description: Owner updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerCreateResponse'
+
+  /owner/{owner_id}/pet:
+    post:
+      summary: Add a pet to an owner
+      parameters:
+        - in: path
+          name: owner_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetRequest'
+      responses:
+        '200':
+          description: Pet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetCreateResponse'
+
+  /owner/{owner_id}/pet/{pet_id}:
+    put:
+      summary: Update pet for owner
+      parameters:
+        - in: path
+          name: owner_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: pet_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetRequest'
+      responses:
+        '201':
+          description: Pet updated
+
+  /pet/{pet_id}/visit:
+    get:
+      summary: List visits for a pet
+      parameters:
+        - in: path
+          name: pet_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Visits for the pet
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VisitResponse'
+    post:
+      summary: Add a visit to a pet
+      parameters:
+        - in: path
+          name: pet_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitAddRequest'
+      responses:
+        '201':
+          description: Visit created
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: OK
+
+    HelloResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Hello, world!
+
+    OwnerRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+
+    OwnerCreateResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          example: 6
+
+    PetRequest:
+      type: object
+      required:
+        - pet_type
+      properties:
+        name:
+          type: string
+          nullable: true
+        pet_type:
+          type: string
+          example: cat
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+
+    PetCreateResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          example: 7
+
+    VisitAddRequest:
+      type: object
+      properties:
+        visit_date:
+          type: string
+          format: date
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    VisitResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          example: 1
+        visit_date:
+          type: string
+          format: date
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    PetResponse:
+      type: object
+      required:
+        - id
+        - visits
+      properties:
+        id:
+          type: integer
+          example: 7
+        name:
+          type: string
+          nullable: true
+        pet_type:
+          type: string
+          nullable: true
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+        visits:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisitResponse'
+
+    OwnerResponse:
+      type: object
+      required:
+        - id
+        - pets
+      properties:
+        id:
+          type: integer
+          example: 6
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetResponse'
+
+    VetResponse:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - specialties
+      properties:
+        id:
+          type: integer
+          example: 1
+        first_name:
+          type: string
+          example: James
+        last_name:
+          type: string
+          example: Carter
+        specialties:
+          type: array
+          items:
+            type: string
